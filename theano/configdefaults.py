@@ -1238,19 +1238,18 @@ def default_blas_ldflags():
                                           "mk2_rt"]])
 
         # Anaconda
-        if "Anaconda" in sys.version or "Continuum" in sys.version:
-            # If the "mkl-service" conda package (available
-            # through Python package "mkl") is installed and
+        if "Continuum Analytics" in sys.version:
+            # If the "mkl-service" conda package is installed and
             # importable, then the libraries (installed by conda
-            # package "mkl-rt") are actually available.  Using
-            # "conda install mkl" will install both, as well as
-            # optimized versions of numpy and scipy.
-            try:
-                import mkl  # noqa
-            except ImportError as e:
-                _logger.info('Conda mkl is not available: %s', e)
-            else:
-                # This branch is executed if no exception was raised
+            # package "mkl") are actually available.  Using
+            # "conda install mkl-service" will install both,
+            # as well as optimized versions of numpy and scipy.
+             try:
+                 import mkl  # noqa
+             except ImportError as e:
+                _logger.warning('Conda mkl is not available, use `conda install mkl-service`: %s', e)
+             else:
+                 # This branch is executed if no exception was raised
                 if sys.platform == "win32":
                     lib_path = os.path.join(sys.prefix, 'DLLs')
                     flags = ['-L"%s"' % lib_path]
@@ -1300,9 +1299,7 @@ def default_blas_ldflags():
         # This fix some case with Anaconda 2.3 on Linux.
         # Newer Anaconda still have this problem but only have
         # Continuum in sys.version.
-        if (("Anaconda" in sys.version or
-             "Continuum" in sys.version) and
-                "linux" in sys.platform):
+        if "Continuum Analytics" in sys.version and "linux" in sys.platform:
             lib_path = os.path.join(sys.prefix, 'lib')
             ret.append('-Wl,-rpath,' + lib_path)
             res = try_blas_flag(ret)
